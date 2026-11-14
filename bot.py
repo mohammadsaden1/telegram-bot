@@ -1,3 +1,4 @@
+
 import os
 from threading import Thread
 from flask import Flask
@@ -29,13 +30,13 @@ def handle_ai_chat(message):
   user_text = message.text
   print(f"پیام دریافتی: {user_text}")
   try:
-    # استفاده از مدل استاندارد
+    # تغییر نام مدل به نسخه جدید و پیشنهادی خود گوگل
     response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=user_text
+        model="gemini-3.8-flash", contents=user_text
     )
     reply_text = response.text
   except Exception as e:
-    print(f"خطای دقیق هوش مصنوعی: {e}")
+    print(f"خطا: {e}")
     reply_text = f"خطا در ارتباط با هوش مصنوعی: {e}"
 
   bot.reply_to(message, reply_text)
