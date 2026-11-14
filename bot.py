@@ -1,11 +1,25 @@
 import os
+from threading import Thread
+from flask import Flask
 from google import genai
 import telebot
 
-# خواندن توکن و کلیدها از متغیرهای محیطی (برای امنیت بیشتر در هاست ابری)
-TELEGRAM_TOKEN = os.environ.get(
-    "TELEGRAM_TOKEN", "8883313715:AAEQSVqy6VEBXZ-Kn-POUGouwGDVaVd07ws"
-)
+# مقداردهی وب‌سرور فلاسْک برای راضی کردن رندر
+app = Flask(__name__)
+
+
+@app.route("/")
+def home():
+  return "Robot is running!"
+
+
+def run_flask():
+  port = int(os.environ.get("PORT", 10000))
+  app.run(host="0.0.0.0", port=port)
+
+
+# تنظیمات ربات تلگرام
+TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 bot = telebot.TeleBot(TELEGRAM_TOKEN)
@@ -27,5 +41,9 @@ def handle_ai_chat(message):
 
 
 if __name__ == "__main__":
-  print("ربات روی هاست ابری آماده به کار شد...")
+  # اجرای وب‌سرور در پس‌زمینه برای داشتن پورت فعال
+  t = Thread(target=run_flask)
+  t.start()
+
+  print("ربات و وب‌سرور آماده به کار شدند...")
   bot.infinity_polling()
