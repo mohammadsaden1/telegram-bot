@@ -4,7 +4,6 @@ from flask import Flask
 from google import genai
 import telebot
 
-# مقداردهی وب‌سرور فلاسْک برای راضی کردن رندر
 app = Flask(__name__)
 
 
@@ -18,7 +17,6 @@ def run_flask():
   app.run(host="0.0.0.0", port=port)
 
 
-# تنظیمات ربات تلگرام
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_TOKEN")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
@@ -29,21 +27,22 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 @bot.message_handler(func=lambda message: True)
 def handle_ai_chat(message):
   user_text = message.text
+  print(f"پیام دریافتی: {user_text}")
   try:
+    # استفاده از مدل استاندارد
     response = client.models.generate_content(
         model="gemini-2.5-flash", contents=user_text
     )
     reply_text = response.text
   except Exception as e:
-    reply_text = "متأسفانه خطایی رخ داد. لطفاً دوباره تلاش کنید."
+    print(f"خطای دقیق هوش مصنوعی: {e}")
+    reply_text = f"خطا در ارتباط با هوش مصنوعی: {e}"
 
   bot.reply_to(message, reply_text)
 
 
 if __name__ == "__main__":
-  # اجرای وب‌سرور در پس‌زمینه برای داشتن پورت فعال
   t = Thread(target=run_flask)
   t.start()
-
   print("ربات و وب‌سرور آماده به کار شدند...")
   bot.infinity_polling()
